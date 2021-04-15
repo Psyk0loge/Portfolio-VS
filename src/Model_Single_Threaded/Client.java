@@ -21,6 +21,10 @@ public class Client extends Thread{
         this.clientID = clientID;
     }
 
+    public Client(int cLientID){
+        this.clientID=cLientID;
+    }
+
 
     @Override
     public void run(){
