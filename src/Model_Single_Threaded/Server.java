@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Server {
 
 	private static final int DEFAULT_PORT = 7777;
-
+	
 	public static void main(String[] args) {
 		BufferedReader clientIn;
 

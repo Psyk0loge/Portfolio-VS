@@ -7,20 +7,17 @@ import java.net.Socket;
 
 public class Client extends Thread {
 
-	private static final int serverPort = 7777;//Standard Port des Message Servers
+	private static final int serverPort = 7777;
 
-	private int clientID = 0;
+	private int clientID;
 
-<<<<<<< HEAD
-    public Client(int cLientID){
-        this.clientID=cLientID;
-    }
+	public Client(int cLientID) {
+		clientID = cLientID;
+	}
 
-=======
 	public int getClientID() {
 		return clientID;
 	}
->>>>>>> d647a81b5ae199f6197d04dd9547f051596e9201
 
 	public void setClientID(int clientID) {
 		this.clientID = clientID;
