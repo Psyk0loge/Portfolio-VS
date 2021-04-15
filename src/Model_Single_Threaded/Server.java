@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class server {
+public class Server {
 
 	private static final int DEFAULT_PORT = 7777;
 
@@ -24,7 +24,7 @@ public class server {
 					clientIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 					String userID = clientIn.readLine();
 					System.out.println("Clientnachricht: " + userID);
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				} finally {
