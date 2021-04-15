@@ -1,4 +1,4 @@
-package Server;
+package Model_Single_Threaded;
 
 import java.net.ConnectException;
 import java.net.Socket;
