@@ -37,7 +37,7 @@ public class Client extends Thread {
 			socket = new Socket(hostname, serverPort);
 			System.out.println("Verbindung zum Message Server hergstellt!");
 			clientOut = new PrintWriter(socket.getOutputStream());
-			clientOut.println("Anfrage von: " + getId());
+			clientOut.println("Anfrage von: " + getClientID());
 			clientOut.flush();
 
 			//für den Fall das wir dann doch mal etwas vom Server empfangen wollen.
@@ -47,14 +47,14 @@ public class Client extends Thread {
             }*/
 		} catch (ConnectException e) {
 			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen");
-			this.connect();
+			connect();
 		} catch (IOException e) {
 			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten");
 		} finally {
 			if (socket != null) {
 				try {
 					socket.close();
-					System.out.println("Client: " + getId() + "hat Verbindung zum Server abgebaut!");
+					System.out.println("Client: " + getClientID() + "hat Verbindung zum Server abgebaut!");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
