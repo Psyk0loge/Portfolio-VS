@@ -46,10 +46,8 @@ public class Client extends Thread {
                 System.out.println(serverReadLine);
             }*/
 		} catch (ConnectException e) {
-			e.printStackTrace();
 			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen");
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten");
 		} finally {
 			if (socket != null) {
@@ -64,7 +62,7 @@ public class Client extends Thread {
 	}
 
 	public static void main(String[] args) {
-		for (int i = 1; i <= 52; i++) {
+		for (int i = 1; i <= 52000; i++) {
 			Client a = new Client(i);
 			a.run();
 		}

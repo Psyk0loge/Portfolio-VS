@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 
 public class Server extends Thread {
 
@@ -15,6 +16,7 @@ public class Server extends Thread {
 	@Override
 	public void run() {
 		BufferedReader clientIn;
+		Random random = new Random();
 
 		Socket conn = null;
 		try {
@@ -28,7 +30,7 @@ public class Server extends Thread {
 					String userID = clientIn.readLine();
 					System.out.println("Clientnachricht: " + userID);
 					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
-
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
