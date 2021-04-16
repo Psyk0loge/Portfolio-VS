@@ -20,7 +20,7 @@ public class Server extends Thread {
 
 		Socket conn = null;
 		try {
-			ServerSocket server = new ServerSocket(DEFAULT_PORT);
+			ServerSocket server = new ServerSocket(DEFAULT_PORT, 8);
 			System.out.println("Server eingericht!");
 			while (true) {
 				try {
@@ -30,7 +30,7 @@ public class Server extends Thread {
 					String userID = clientIn.readLine();
 					System.out.println("Clientnachricht: " + userID);
 					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
-					
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
