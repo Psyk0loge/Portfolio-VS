@@ -47,6 +47,7 @@ public class Client extends Thread {
             }*/
 		} catch (ConnectException e) {
 			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen");
+			this.connect();
 		} catch (IOException e) {
 			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten");
 		} finally {
