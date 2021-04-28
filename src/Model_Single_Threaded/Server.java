@@ -25,7 +25,7 @@ public class Server extends Thread {
 			ServerSocket server = new ServerSocket(DEFAULT_PORT, 8);
 			System.out.println("Server eingericht!");
 			long serverStartTime = System.nanoTime();
-			while (clientCounter < 354) {
+			do {
 				try {
 					conn = server.accept();
 					System.out.println("Client verbunden!");
@@ -53,7 +53,7 @@ public class Server extends Thread {
 						e.printStackTrace();
 					}
 				}
-			}
+			} while (clientCounter < 353);
 			long serverEndTime = System.nanoTime();
 			long serverElapsedTime = serverEndTime - serverStartTime;
 			long serverElapsedTimeInSeconds = (serverElapsedTime / 1000000000) / 60;

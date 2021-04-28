@@ -48,7 +48,7 @@ public class Client extends Thread {
 			System.out.println("Verbindung zum Message Server hergstellt!");
 			rejectCounters.add(rejectedCounter);
 			clientOut = new PrintWriter(socket.getOutputStream());
-			clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId());
+			clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId() + "| Nach " + rejectedCounter + " Versuchen durchgekommen");
 			clientOut.flush();
 		} catch (ConnectException e) {
 			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen" + "| Durch Thread:" + getId());
