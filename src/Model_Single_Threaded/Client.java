@@ -4,22 +4,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Client extends Thread {
 
 	private static final int serverPort = 7777;
 	public static final int CLIENT_COUNT = 353;
-	public static List<Integer> rejectCounters = new ArrayList<>();
+	public static int[] rejectCounters = new int[CLIENT_COUNT];
 
 	private int clientID;
 	int connectTryCounter;
 	int rejectedCounter;
-	// private static int MAX = 1200; //20 Stunden
-	private static int MAX = 12; //20 Stunden
-	private static int MIN = 4; //8 Stunden
-	// private static int MIN = 480; //8 Stunden
+	private static int MAX = 1200; //20 Stunden
+	// private static int MAX = 12; //20 Stunden
+	// private static int MIN = 4; //8 Stunden
+	private static int MIN = 480; //8 Stunden
 
 	public Client(int clientID) {
 		this.clientID = clientID;
@@ -41,7 +39,7 @@ public class Client extends Thread {
 	}
 
 	synchronized void addRejectedCounter(int rejectedCounter) {
-		Client.rejectCounters.add(rejectedCounter);
+		Client.rejectCounters[getClientID() - 1] = rejectedCounter;
 	}
 
 	public void connect() {

@@ -73,7 +73,7 @@ public class Server extends Thread {
 			for (int rejectCounter : Client.rejectCounters) {
 				sumCounter += rejectCounter;
 			}
-			System.out.println("Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.size());
+			System.out.println("Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.length);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
