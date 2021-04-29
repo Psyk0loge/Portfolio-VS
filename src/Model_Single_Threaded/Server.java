@@ -70,20 +70,13 @@ public class Server extends Thread {
 			long maxTimeSpendByClient = Collections.max(clientTimes);
 			System.out.println("Maximale Verweildauer: " + maxTimeSpendByClient / 1000000000 + " sek");
 			long sumCounter = 0;
-			System.out.println("rejectedCtrList ID: " + Client.rejectCounters.hashCode());
 			for (int rejectCounter : Client.rejectCounters) {
-				System.out.println("rejectCounter: " + rejectCounter);
 				sumCounter += rejectCounter;
-				System.out.println("sumCounter: " + sumCounter);
 			}
 			System.out.println("Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.size());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-		new Server().run();
 	}
 
 }

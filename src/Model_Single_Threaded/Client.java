@@ -11,17 +11,15 @@ import java.util.concurrent.Semaphore;
 public class Client extends Thread {
 
 	private static final int serverPort = 7777;
-	public static final int CLIENT_COUNT = 20;
+	public static final int CLIENT_COUNT = 353;
 	public static List<Integer> rejectCounters = new ArrayList<>();
 	private static Semaphore mutex = new Semaphore(1, true);
 
 	private int clientID;
 	int connectTryCounter;
 	int rejectedCounter;
-	// private static int MAX = 1200; //20 Stunden
-	private static int MAX = 12; //20 Stunden
-	// private static int MIN = 480; //8 Stunden
-	private static int MIN = 4; //8 Stunden
+	private static int MAX = 1200; //20 Stunden
+	private static int MIN = 480; //8 Stunden
 
 	public Client(int clientID) {
 		this.clientID = clientID;
@@ -87,13 +85,6 @@ public class Client extends Thread {
 					e.printStackTrace();
 				}
 			}
-		}
-	}
-
-	public static void main(String[] args) {
-		System.out.println("rejectedCtrList ID: " + Client.rejectCounters.hashCode());
-		for (int i = 1; i <= CLIENT_COUNT; i++) {
-			new Client(i).start();
 		}
 	}
 
