@@ -6,20 +6,20 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 public class Client extends Thread {
 
 	private static final int serverPort = 7777;
 	public static final int CLIENT_COUNT = 353;
 	public static List<Integer> rejectCounters = new ArrayList<>();
-	private static Semaphore mutex = new Semaphore(1, true);
 
 	private int clientID;
 	int connectTryCounter;
 	int rejectedCounter;
-	private static int MAX = 1200; //20 Stunden
-	private static int MIN = 480; //8 Stunden
+	// private static int MAX = 1200; //20 Stunden
+	private static int MAX = 12; //20 Stunden
+	private static int MIN = 4; //8 Stunden
+	// private static int MIN = 480; //8 Stunden
 
 	public Client(int clientID) {
 		this.clientID = clientID;
@@ -40,6 +40,10 @@ public class Client extends Thread {
 		connect();
 	}
 
+	synchronized void addRejectedCounter(int rejectedCounter) {
+		Client.rejectCounters.add(rejectedCounter);
+	}
+
 	public void connect() {
 		String hostname = "localhost";
 		PrintWriter clientOut;
@@ -48,9 +52,7 @@ public class Client extends Thread {
 			connectTryCounter++;
 			socket = new Socket(hostname, serverPort);
 			System.out.println("Verbindung zum Message Server hergstellt!");
-			Client.mutex.acquire();
-			Client.rejectCounters.add(rejectedCounter);
-			Client.mutex.release();
+			addRejectedCounter(rejectedCounter);
 			clientOut = new PrintWriter(socket.getOutputStream());
 			if (rejectedCounter > 0) {
 				clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId() + "| Nach " + rejectedCounter + " Versuchen durchgekommen");
@@ -74,8 +76,6 @@ public class Client extends Thread {
 			connect();
 		} catch (IOException e) {
 			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten (ClientID: " + getClientID() + ")");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		} finally {
 			if (socket != null) {
 				try {
