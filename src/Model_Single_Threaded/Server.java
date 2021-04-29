@@ -28,18 +28,21 @@ public class Server extends Thread {
 			do {
 				try {
 					conn = server.accept();
-					System.out.println("Client verbunden!");
 					clientCounter++;
+					System.out.println("Client Nr." + clientCounter + " verbunden!");
 					long startTime = System.nanoTime();
 					clientIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-					String userID = clientIn.readLine();
-					System.out.println("Clientnachricht: " + userID);
+					String userMsg = clientIn.readLine();
+					int startOfUID = userMsg.indexOf(": ");
+					int endOfUID = userMsg.indexOf("|");
+					String userID = userMsg.substring((startOfUID + 1), endOfUID);
+					System.out.println("Clientnachricht: " + userMsg);
 					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
 					long endTime = System.nanoTime();
 					long elapsedTime = endTime - startTime;
 					clientTimes.add(elapsedTime);
 					long elapsedTimeInSeconds = elapsedTime / 1000000000;
-					System.out.println("Verweildauer: " + elapsedTimeInSeconds + " sek for user with id: " + userID);
+					System.out.println("Verweildauer: " + elapsedTimeInSeconds + " sek für Client mit der ID:" + userID);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -53,7 +56,7 @@ public class Server extends Thread {
 						e.printStackTrace();
 					}
 				}
-			} while (clientCounter < 353);
+			} while (clientCounter < Client.CLIENT_COUNT);
 			long serverEndTime = System.nanoTime();
 			long serverElapsedTime = serverEndTime - serverStartTime;
 			long serverElapsedTimeInSeconds = (serverElapsedTime / 1000000000) / 60;
@@ -67,8 +70,11 @@ public class Server extends Thread {
 			long maxTimeSpendByClient = Collections.max(clientTimes);
 			System.out.println("Maximale Verweildauer: " + maxTimeSpendByClient / 1000000000 + " sek");
 			long sumCounter = 0;
+			System.out.println("rejectedCtrList ID: " + Client.rejectCounters.hashCode());
 			for (int rejectCounter : Client.rejectCounters) {
+				System.out.println("rejectCounter: " + rejectCounter);
 				sumCounter += rejectCounter;
+				System.out.println("sumCounter: " + sumCounter);
 			}
 			System.out.println("Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.size());
 		} catch (IOException e) {

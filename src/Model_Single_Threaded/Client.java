@@ -6,17 +6,22 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class Client extends Thread {
 
 	private static final int serverPort = 7777;
+	public static final int CLIENT_COUNT = 20;
 	public static List<Integer> rejectCounters = new ArrayList<>();
+	private static Semaphore mutex = new Semaphore(1, true);
 
 	private int clientID;
 	int connectTryCounter;
 	int rejectedCounter;
-	private static int MAX = 1200; //20 Stunden
-	private static int MIN = 480; //8 Stunden
+	// private static int MAX = 1200; //20 Stunden
+	private static int MAX = 12; //20 Stunden
+	// private static int MIN = 480; //8 Stunden
+	private static int MIN = 4; //8 Stunden
 
 	public Client(int clientID) {
 		this.clientID = clientID;
@@ -43,18 +48,26 @@ public class Client extends Thread {
 		Socket socket = null;
 		try {
 			connectTryCounter++;
-			rejectedCounter++;
 			socket = new Socket(hostname, serverPort);
 			System.out.println("Verbindung zum Message Server hergstellt!");
-			rejectCounters.add(rejectedCounter);
+			Client.mutex.acquire();
+			Client.rejectCounters.add(rejectedCounter);
+			Client.mutex.release();
 			clientOut = new PrintWriter(socket.getOutputStream());
-			clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId() + "| Nach " + rejectedCounter + " Versuchen durchgekommen");
+			if (rejectedCounter > 0) {
+				clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId() + "| Nach " + rejectedCounter + " Versuchen durchgekommen");
+			} else {
+				clientOut.println("Anfrage von: " + getClientID() + "| Durch Thread:" + getId());
+			}
 			clientOut.flush();
 		} catch (ConnectException e) {
-			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen" + "| Durch Thread:" + getId());
+			System.out.println("Client " + getClientID() + " wurde vom Server abgewiesen" + "| Durch Thread: " + getId());
+			rejectedCounter++;
 			if (connectTryCounter == 5) {
 				try {
-					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
+					long sleepTime = (long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000);
+					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 60000) + " Minuten");
+					sleep(sleepTime);
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();
 				}
@@ -62,12 +75,14 @@ public class Client extends Thread {
 			}
 			connect();
 		} catch (IOException e) {
-			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten");
+			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten (ClientID: " + getClientID() + ")");
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		} finally {
 			if (socket != null) {
 				try {
 					socket.close();
-					System.out.println("Client: " + getClientID() + "hat Verbindung zum Server abgebaut!");
+					System.out.println("Client mit der ID: " + getClientID() + " hat die Verbindung zum Server abgebaut!");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -76,7 +91,8 @@ public class Client extends Thread {
 	}
 
 	public static void main(String[] args) {
-		for (int i = 1; i <= 353; i++) {
+		System.out.println("rejectedCtrList ID: " + Client.rejectCounters.hashCode());
+		for (int i = 1; i <= CLIENT_COUNT; i++) {
 			new Client(i).start();
 		}
 	}
