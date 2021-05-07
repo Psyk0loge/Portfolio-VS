@@ -77,7 +77,7 @@ public class Server extends Thread {
 			System.out.println(" Durschnittsverweildauer: " + ((int) averageTimeSpendByClient / 60) + " Stunden");
 			System.out.println(" Maximale Verweildauer: " + ((int) maxTimeSpendByClient / 60) + " Stunden");
 			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + new DecimalFormat("##,##")
-					.format(sumCounter / Client.rejectCounters.length));
+					.format((sumCounter / Client.rejectCounters.length)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
