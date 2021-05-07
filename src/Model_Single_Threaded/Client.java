@@ -1,11 +1,11 @@
-package Classes_Needed_For_Both_Models;
+package Model_Single_Threaded;
 
-import static Classes_Needed_For_Both_Models.Constants.CLIENT_COUNT;
-import static Classes_Needed_For_Both_Models.Constants.MAX_RETRIES;
-import static Classes_Needed_For_Both_Models.Constants.MAX_TIME_PAUSING;
-import static Classes_Needed_For_Both_Models.Constants.MIN_RETRIES;
-import static Classes_Needed_For_Both_Models.Constants.MIN_TIME_PAUSING;
-import static Classes_Needed_For_Both_Models.Constants.SERVER_PORT;
+import static Model_Single_Threaded.Constants.CLIENT_COUNT;
+import static Model_Single_Threaded.Constants.MAX_RETRIES;
+import static Model_Single_Threaded.Constants.MAX_TIME_PAUSING;
+import static Model_Single_Threaded.Constants.MIN_RETRIES;
+import static Model_Single_Threaded.Constants.MIN_TIME_PAUSING;
+import static Model_Single_Threaded.Constants.SERVER_PORT;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -71,8 +71,8 @@ public class Client extends Thread {
 			if (connectTryCounter == retriesBeforePausing) {
 				System.out.println("Versuche vor der Pause: " + retriesBeforePausing + ", von Client mit der ID: " + getClientID());
 				try {
-					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 1000);
-					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 60000) + " Minuten");
+					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 10);
+					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 600) + " Minuten");
 					sleep(sleepTime);
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();

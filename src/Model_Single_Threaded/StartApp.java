@@ -1,8 +1,6 @@
 package Model_Single_Threaded;
 
-import static Classes_Needed_For_Both_Models.Constants.CLIENT_COUNT;
-
-import Classes_Needed_For_Both_Models.Client;
+import static Model_Single_Threaded.Constants.CLIENT_COUNT;
 
 public class StartApp {
 	public static void main(String[] args) {

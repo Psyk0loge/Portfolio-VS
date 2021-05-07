@@ -1,9 +1,9 @@
 package Model_Single_Threaded;
 
-import static Classes_Needed_For_Both_Models.Constants.CLIENT_COUNT;
-import static Classes_Needed_For_Both_Models.Constants.MAX_TIME_SPENT;
-import static Classes_Needed_For_Both_Models.Constants.MIN_TIME_SPENT;
-import static Classes_Needed_For_Both_Models.Constants.SERVER_PORT;
+import static Model_Single_Threaded.Constants.CLIENT_COUNT;
+import static Model_Single_Threaded.Constants.MAX_TIME_SPENT;
+import static Model_Single_Threaded.Constants.MIN_TIME_SPENT;
+import static Model_Single_Threaded.Constants.SERVER_PORT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import Classes_Needed_For_Both_Models.Client;
-
 public class Server extends Thread {
 
 	int clientCounter = 0;
@@ -28,9 +26,9 @@ public class Server extends Thread {
 		BufferedReader clientIn;
 		Socket conn = null;
 		try {
-			ServerSocket server = new ServerSocket(SERVER_PORT, 8);
+			ServerSocket server = new ServerSocket(SERVER_PORT, 1);
 			System.out.println("Server eingericht!");
-			long serverStartTime = System.nanoTime();
+			Instant serverStartTime = Instant.now();
 			do {
 				try {
 					conn = server.accept();
@@ -45,14 +43,12 @@ public class Server extends Thread {
 					Instant startTime = null;
 					if (startTimeIndex != -1) {
 						startTime = Instant.parse(userMsg.substring((startTimeIndex + 8)));
-						System.out.println("Verweildauer vor erfolgreichem Verbindungsaufbau: " + startTime + "des Client mit der ID: " + userID);
 					}
-					System.out.println("Clientnachricht: " + userMsg);
-					sleep((long) (Math.floor(Math.random() * (MAX_TIME_SPENT - MIN_TIME_SPENT + 1) + MIN_TIME_SPENT) * 1000));
 					Instant endTime = Instant.now();
-					long elapsedTime = Duration.between(startTime, endTime).getSeconds();
+					long elapsedTime = Duration.between(startTime, endTime).getSeconds() * 100;
 					clientTimes.add(elapsedTime);
 					System.out.println("Verweildauer: " + elapsedTime + " sek für Client mit der ID:" + userID);
+					sleep((long) (Math.floor(Math.random() * (MAX_TIME_SPENT - MIN_TIME_SPENT + 1) + MIN_TIME_SPENT) * 10));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -67,23 +63,25 @@ public class Server extends Thread {
 					}
 				}
 			} while (clientCounter < CLIENT_COUNT);
-			long serverEndTime = System.nanoTime();
-			long serverElapsedTime = serverEndTime - serverStartTime;
-			long serverElapsedTimeInSeconds = (serverElapsedTime / 1000000000) / 60;
-			System.out.println("Serverlaufzeit: " + serverElapsedTimeInSeconds + " min");
+			Instant serverEndTime = Instant.now();
+			long serverElapsedTime = Duration.between(serverStartTime, serverEndTime).toMinutes() * 100;
 			long sumTime = 0;
 			for (Long clientTime : clientTimes) {
 				sumTime += clientTime;
 			}
-			long averageTimeSpendByClient = sumTime / clientTimes.size();
-			System.out.println("Durschnittsverweildauer: " + averageTimeSpendByClient + " sek");
+			long averageTimeSpendByClient = (sumTime / clientTimes.size());
 			long maxTimeSpendByClient = Collections.max(clientTimes);
-			System.out.println("Maximale Verweildauer: " + maxTimeSpendByClient + " sek");
 			long sumCounter = 0;
 			for (int rejectCounter : Client.rejectCounters) {
 				sumCounter += rejectCounter;
 			}
-			System.out.println("Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.length);
+			System.out.println("-----------------------------------------------------------------");
+			System.out.println("ENDERGEBNIS DES MODELLS:");
+			System.out.println("");
+			System.out.println(" Serverlaufzeit: " + serverElapsedTime + " min");
+			System.out.println(" Durschnittsverweildauer: " + ((int) averageTimeSpendByClient / 60) + " Stunden");
+			System.out.println(" Maximale Verweildauer: " + ((int) maxTimeSpendByClient / 60) + " Stunden");
+			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.length);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
