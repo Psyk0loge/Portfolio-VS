@@ -34,10 +34,7 @@ public class Client extends Thread {
 		return clientID;
 	}
 
-	public void setClientID(int clientID) {
-		this.clientID = clientID;
-	}
-
+	//client counter wird unter gegenseitigem Auschluss hochgezählt
 	private void incrementClientCounter() {
 		try {
 			mutex.acquire();
@@ -49,6 +46,7 @@ public class Client extends Thread {
 		}
 	}
 
+	//client counter wird unter gegenseitigem auschluss zurückgegeben
 	public static int getClientCounter() {
 		int tempCtr = 0;
 		try {
@@ -65,11 +63,14 @@ public class Client extends Thread {
 	public void run() {
 		connectTryCounter = 0;
 		rejectedCounter = 0;
+
+		//die versuche vor der pause werden innerhalb der range random auf eine ganze zahl gesetzt
 		int retriesBeforePausing = (int) Math.floor(Math.random() * (MAX_RETRIES - MIN_RETRIES + 1) + MIN_RETRIES);
 		Instant startTime = Instant.now();
 		connect(retriesBeforePausing, startTime);
 	}
 
+	//rejectedcounter wird zur liste hinzugefügt unter gegenseitigem ausschluss
 	synchronized void addRejectedCounter(int rejectedCounter) {
 		Client.rejectCounters[getClientID() - 1] = rejectedCounter;
 	}
@@ -98,15 +99,17 @@ public class Client extends Thread {
 			if (connectTryCounter == retriesBeforePausing) {
 				System.out.println("Versuche vor der Pause: " + retriesBeforePausing + ", von Client mit der ID: " + getClientID());
 				try {
-					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 1000);
-					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 60000) + " Minuten");
+					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 10);
+					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 600) + " Minuten");
 					sleep(sleepTime);
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();
 				}
 				connectTryCounter = 0;
 			}
+			//Zufallszahl bei der eine Pause eingelegt wird, wird neu festgesetzt
 			retriesBeforePausing = (int) Math.floor(Math.random() * (MAX_RETRIES - MIN_RETRIES + 1) + MIN_RETRIES);
+			//client versucht sich erneut zu connecten
 			connect(retriesBeforePausing, startTime);
 		} catch (IOException e) {
 			System.out.println("Es ist ein unvorhergesehener Fehler aufgetreten (ClientID: " + getClientID() + ")");
