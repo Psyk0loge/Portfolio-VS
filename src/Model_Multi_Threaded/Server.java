@@ -1,2 +1,5 @@
-package Model_Multi_Threaded;public class Server {
+package Model_Multi_Threaded;
+
+public class Server extends Thread {
+	
 }

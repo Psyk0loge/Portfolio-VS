@@ -1,5 +1,10 @@
 package Model_Single_Threaded;
 
+import static Classes_Needed_For_Both_Models.Constants.CLIENT_COUNT;
+import static Classes_Needed_For_Both_Models.Constants.MAX_TIME_SPENT;
+import static Classes_Needed_For_Both_Models.Constants.MIN_TIME_SPENT;
+import static Classes_Needed_For_Both_Models.Constants.SERVER_PORT;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,11 +16,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Classes_Needed_For_Both_Models.Client;
+
 public class Server extends Thread {
 
-	private static final int DEFAULT_PORT = 7777;
-	private static final int MAX = 15;
-	private static final int MIN = 2;
 	int clientCounter = 0;
 	List<Long> clientTimes = new ArrayList<>();
 
@@ -24,7 +28,7 @@ public class Server extends Thread {
 		BufferedReader clientIn;
 		Socket conn = null;
 		try {
-			ServerSocket server = new ServerSocket(DEFAULT_PORT, 8);
+			ServerSocket server = new ServerSocket(SERVER_PORT, 8);
 			System.out.println("Server eingericht!");
 			long serverStartTime = System.nanoTime();
 			do {
@@ -44,7 +48,7 @@ public class Server extends Thread {
 						System.out.println("Verweildauer vor erfolgreichem Verbindungsaufbau: " + startTime + "des Client mit der ID: " + userID);
 					}
 					System.out.println("Clientnachricht: " + userMsg);
-					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
+					sleep((long) (Math.floor(Math.random() * (MAX_TIME_SPENT - MIN_TIME_SPENT + 1) + MIN_TIME_SPENT) * 1000));
 					Instant endTime = Instant.now();
 					long elapsedTime = Duration.between(startTime, endTime).getSeconds();
 					clientTimes.add(elapsedTime);
@@ -62,7 +66,7 @@ public class Server extends Thread {
 						e.printStackTrace();
 					}
 				}
-			} while (clientCounter < Client.CLIENT_COUNT);
+			} while (clientCounter < CLIENT_COUNT);
 			long serverEndTime = System.nanoTime();
 			long serverElapsedTime = serverEndTime - serverStartTime;
 			long serverElapsedTimeInSeconds = (serverElapsedTime / 1000000000) / 60;
