@@ -12,10 +12,15 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.time.Instant;
+import java.util.concurrent.Semaphore;
 
 public class Client extends Thread {
 
 	public static int[] rejectCounters = new int[CLIENT_COUNT];
+
+	static Semaphore mutex = new Semaphore(1, true);
+
+	static int clientCounter = 0;
 
 	private int clientID;
 	int connectTryCounter;
@@ -31,6 +36,29 @@ public class Client extends Thread {
 
 	public void setClientID(int clientID) {
 		this.clientID = clientID;
+	}
+
+	private void incrementClientCounter() {
+		try {
+			mutex.acquire();
+			clientCounter++;
+			System.out.println("Client Nr." + clientCounter + " mit der ID: " + getClientID() + " verbunden");
+			mutex.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static int getClientCounter() {
+		int tempCtr = 0;
+		try {
+			mutex.acquire();
+			tempCtr = clientCounter;
+			mutex.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return tempCtr;
 	}
 
 	@Override
@@ -53,7 +81,7 @@ public class Client extends Thread {
 		try {
 			connectTryCounter++;
 			socket = new Socket(hostname, SERVER_PORT);
-			System.out.println("Verbindung zum Message Server hergstellt!");
+			incrementClientCounter();
 			Instant startTimeOfThread = startTime;
 			addRejectedCounter(rejectedCounter);
 			clientOut = new PrintWriter(socket.getOutputStream());
@@ -62,7 +90,6 @@ public class Client extends Thread {
 				clientMsg += " | " + rejectedCounter + " Versuchen durchgekommen";
 			}
 			clientMsg += " | Verweildauer bis zum erfolgreichen Verbindungsaufbau zum Server: " + startTimeOfThread;
-			System.out.println("CLIENT: " + getClientID() + " | " + startTimeOfThread);
 			clientOut.println(clientMsg);
 			clientOut.flush();
 		} catch (ConnectException e) {

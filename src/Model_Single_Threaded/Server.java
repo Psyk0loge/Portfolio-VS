@@ -1,5 +1,6 @@
 package Model_Single_Threaded;
 
+import static Model_Single_Threaded.Client.getClientCounter;
 import static Model_Single_Threaded.Constants.CLIENT_COUNT;
 import static Model_Single_Threaded.Constants.MAX_TIME_SPENT;
 import static Model_Single_Threaded.Constants.MIN_TIME_SPENT;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,7 +20,6 @@ import java.util.List;
 
 public class Server extends Thread {
 
-	int clientCounter = 0;
 	List<Long> clientTimes = new ArrayList<>();
 
 	@Override
@@ -28,12 +29,9 @@ public class Server extends Thread {
 		try {
 			ServerSocket server = new ServerSocket(SERVER_PORT, 1);
 			System.out.println("Server eingericht!");
-			Instant serverStartTime = Instant.now();
 			do {
 				try {
 					conn = server.accept();
-					clientCounter++;
-					System.out.println("Client Nr." + clientCounter + " verbunden!");
 					clientIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 					String userMsg = clientIn.readLine();
 					int startOfUID = userMsg.indexOf(": ");
@@ -62,26 +60,24 @@ public class Server extends Thread {
 						e.printStackTrace();
 					}
 				}
-			} while (clientCounter < CLIENT_COUNT);
-			Instant serverEndTime = Instant.now();
-			long serverElapsedTime = Duration.between(serverStartTime, serverEndTime).toMinutes() * 100;
+			} while (getClientCounter() < CLIENT_COUNT);
 			long sumTime = 0;
 			for (Long clientTime : clientTimes) {
 				sumTime += clientTime;
 			}
 			long averageTimeSpendByClient = (sumTime / clientTimes.size());
 			long maxTimeSpendByClient = Collections.max(clientTimes);
-			long sumCounter = 0;
-			for (int rejectCounter : Client.rejectCounters) {
+			double sumCounter = 0;
+			for (double rejectCounter : Client.rejectCounters) {
 				sumCounter += rejectCounter;
 			}
 			System.out.println("-----------------------------------------------------------------");
 			System.out.println("ENDERGEBNIS DES MODELLS:");
 			System.out.println("");
-			System.out.println(" Serverlaufzeit: " + serverElapsedTime + " min");
 			System.out.println(" Durschnittsverweildauer: " + ((int) averageTimeSpendByClient / 60) + " Stunden");
 			System.out.println(" Maximale Verweildauer: " + ((int) maxTimeSpendByClient / 60) + " Stunden");
-			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.length);
+			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + new DecimalFormat("##,##")
+					.format(sumCounter / Client.rejectCounters.length));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
