@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,19 +32,23 @@ public class Server extends Thread {
 					conn = server.accept();
 					clientCounter++;
 					System.out.println("Client Nr." + clientCounter + " verbunden!");
-					long startTime = System.nanoTime();
 					clientIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 					String userMsg = clientIn.readLine();
 					int startOfUID = userMsg.indexOf(": ");
 					int endOfUID = userMsg.indexOf("|");
+					int startTimeIndex = userMsg.indexOf("Server: ");
 					String userID = userMsg.substring((startOfUID + 1), endOfUID);
+					Instant startTime = null;
+					if (startTimeIndex != -1) {
+						startTime = Instant.parse(userMsg.substring((startTimeIndex + 8)));
+						System.out.println("Verweildauer vor erfolgreichem Verbindungsaufbau: " + startTime + "des Client mit der ID: " + userID);
+					}
 					System.out.println("Clientnachricht: " + userMsg);
 					sleep((long) (Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000));
-					long endTime = System.nanoTime();
-					long elapsedTime = endTime - startTime;
+					Instant endTime = Instant.now();
+					long elapsedTime = Duration.between(startTime, endTime).getSeconds();
 					clientTimes.add(elapsedTime);
-					long elapsedTimeInSeconds = elapsedTime / 1000000000;
-					System.out.println("Verweildauer: " + elapsedTimeInSeconds + " sek für Client mit der ID:" + userID);
+					System.out.println("Verweildauer: " + elapsedTime + " sek für Client mit der ID:" + userID);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -66,9 +72,9 @@ public class Server extends Thread {
 				sumTime += clientTime;
 			}
 			long averageTimeSpendByClient = sumTime / clientTimes.size();
-			System.out.println("Durschnittsverweildauer: " + averageTimeSpendByClient / 1000000000 + " sek");
+			System.out.println("Durschnittsverweildauer: " + averageTimeSpendByClient + " sek");
 			long maxTimeSpendByClient = Collections.max(clientTimes);
-			System.out.println("Maximale Verweildauer: " + maxTimeSpendByClient / 1000000000 + " sek");
+			System.out.println("Maximale Verweildauer: " + maxTimeSpendByClient + " sek");
 			long sumCounter = 0;
 			for (int rejectCounter : Client.rejectCounters) {
 				sumCounter += rejectCounter;
