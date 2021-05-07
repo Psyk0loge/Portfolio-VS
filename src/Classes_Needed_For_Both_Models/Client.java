@@ -66,7 +66,7 @@ public class Client extends Thread {
 			clientOut.println(clientMsg);
 			clientOut.flush();
 		} catch (ConnectException e) {
-			System.out.println("Classes_Needed_For_Both_Models " + getClientID() + " wurde vom Server abgewiesen" + "| Durch Thread: " + getId());
+			System.out.println("Client mit der ID: " + getClientID() + " wurde vom Server abgewiesen" + "| Durch Thread: " + getId());
 			rejectedCounter++;
 			if (connectTryCounter == retriesBeforePausing) {
 				System.out.println("Versuche vor der Pause: " + retriesBeforePausing + ", von Client mit der ID: " + getClientID());
