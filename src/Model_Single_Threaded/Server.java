@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -43,10 +42,10 @@ public class Server extends Thread {
 						startTime = Instant.parse(userMsg.substring((startTimeIndex + 8)));
 					}
 					Instant endTime = Instant.now();
-					long elapsedTime = Duration.between(startTime, endTime).getSeconds() * 100;
+					long elapsedTime = Duration.between(startTime, endTime).getSeconds() * 10000;
 					clientTimes.add(elapsedTime);
 					System.out.println("Verweildauer: " + elapsedTime + " sek für Client mit der ID:" + userID);
-					sleep((long) (Math.floor(Math.random() * (MAX_TIME_SPENT - MIN_TIME_SPENT + 1) + MIN_TIME_SPENT) * 10));
+					sleep((long) (Math.floor(Math.random() * (MAX_TIME_SPENT - MIN_TIME_SPENT + 1) + MIN_TIME_SPENT) * 1000));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -76,8 +75,7 @@ public class Server extends Thread {
 			System.out.println("");
 			System.out.println(" Durschnittsverweildauer: " + ((int) averageTimeSpendByClient / 60) + " Stunden");
 			System.out.println(" Maximale Verweildauer: " + ((int) maxTimeSpendByClient / 60) + " Stunden");
-			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + new DecimalFormat("##,##")
-					.format((sumCounter / Client.rejectCounters.length)));
+			System.out.println(" Durschnittliche Anzahl an Abweisungen vom Server an den Client: " + sumCounter / Client.rejectCounters.length);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

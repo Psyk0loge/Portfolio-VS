@@ -98,8 +98,8 @@ public class Client extends Thread {
 			if (connectTryCounter == retriesBeforePausing) {
 				System.out.println("Versuche vor der Pause: " + retriesBeforePausing + ", von Client mit der ID: " + getClientID());
 				try {
-					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 10);
-					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 600) + " Minuten");
+					long sleepTime = (long) (Math.floor(Math.random() * (MAX_TIME_PAUSING - MIN_TIME_PAUSING + 1) + MIN_TIME_PAUSING) * 1000);
+					System.out.println("Client mit der ID: " + getClientID() + " macht eine Pause für " + ((int) sleepTime / 60000) + " Minuten");
 					sleep(sleepTime);
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();
